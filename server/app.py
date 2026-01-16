@@ -44,7 +44,7 @@ def create_message():
 
 @app.route('/messages/<int:id>', methods=['PATCH'])
 def update_message(id):
-    message = Message.query.get(id)
+    message = db.session.get(Message, id)
     data = request.get_json()
     message.body = data['body']
     db.session.commit()
@@ -59,6 +59,6 @@ def update_message(id):
 
 @app.route('/messages/<int:id>', methods=['DELETE'])
 def delete_message(id):
-    message = Message.query.get(id)
+    message = db.session.get(Message, id)
     db.session.delete(message)
     db.session.commit()
