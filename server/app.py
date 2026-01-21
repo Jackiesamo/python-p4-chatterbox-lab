@@ -1,5 +1,6 @@
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, Message
 
@@ -8,6 +9,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 
+CORS(app)
+
 # Initialize the app with the db
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -15,7 +18,7 @@ migrate = Migrate(app, db)
 # Your routes go here
 @app.route('/messages', methods=['GET'])
 def get_messages():
-    messages = Message.query.all()
+    messages = Message.query.order_by(Message.created_at.asc()).all()
     return jsonify([{
         'id': msg.id,
         'body': msg.body,
@@ -62,3 +65,4 @@ def delete_message(id):
     message = db.session.get(Message, id)
     db.session.delete(message)
     db.session.commit()
+    return '', 204
